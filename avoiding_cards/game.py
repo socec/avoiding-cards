@@ -1,66 +1,7 @@
 import random
-from enum import Enum
 from typing import List
 
-
-class GameState:
-    def __init__(self, card: int, coins: int, active_player: int, player_cards: List[List[int]]):
-        self.card = card
-        self.coins = coins
-        self.active_player = active_player
-        self.player_cards = player_cards
-
-
-class PlayerAction(Enum):
-    FAIL = 0
-    KEEP = 1
-    PASS = 2
-
-
-class PlayerInterface:
-    def name(self):
-        return 'UNKNOWN'
-
-    def receive_player_number(self, number: int):
-        pass
-
-    def receive_game_state(self, game_state: GameState):
-        pass
-
-    def receive_last_action(self, action: PlayerAction):
-        pass
-
-    def do_action(self, game_state: GameState, your_coins: int) -> PlayerAction:
-        return PlayerAction.FAIL
-
-
-class PlayerInterfaceSimple(PlayerInterface):
-    def __init__(self, name: str):
-        self.name = name
-
-    def receive_player_number(self, number: int):
-        print('{} - thanks for ID: {}.'.format(self.name, number))
-
-    def receive_game_state(self, state: GameState):
-        print('{} - thanks for state: {} {} {} {}'.format(self.name, state.card, state.coins,
-                                                          state.active_player, state.player_cards))
-
-    def receive_last_action(self, action: PlayerAction):
-        print('{} - thanks for action: {}.'.format(self.name, action))
-
-    def do_action(self, state: GameState, coins_owned: int) -> PlayerAction:
-        val = random.randint(1, 10) % 2
-        if val:
-            action = PlayerAction.PASS
-        else:
-            action = PlayerAction.KEEP
-
-        print('{} with {} coins will {} card {}'.format(
-              self.name, coins_owned, action.name, state.card))
-
-        return action
-
-####################################################################################################
+from avoiding_cards.player import GameState, PlayerAction, PlayerInterface
 
 
 class CardDeck:
@@ -152,6 +93,8 @@ class GameLoop:
         else:
             action = player.interface.do_action(self.get_game_state(), player.current_coins())
 
+        self.broadcast_last_action(action)
+
         if action == PlayerAction.KEEP:
             # player gets the card
             player.add_card(self._card)
@@ -164,10 +107,8 @@ class GameLoop:
             # player gives a coin
             player.remove_coin()
             self._coins += 1
-            # game moves to the next player
+            # avoiding_cards moves to the next player
             self._active_player = (self._active_player + 1) % len(self._players)
-
-        self.broadcast_last_action(action)
 
     def start(self):
         # tell players their number in the queue
@@ -175,17 +116,12 @@ class GameLoop:
 
         # play while there are cards in the deck
         while self._card:
-            # broadcast game state before each turn
+            # broadcast avoiding_cards state before each turn
             self.broadcast_game_state()
             self.play_turn()
 
-        # broadcast final game state
+        # broadcast final avoiding_cards state
         self.broadcast_game_state()
 
         # show points
         print(self.get_player_points())
-
-####################################################################################################
-
-the_players = [PlayerInterfaceSimple('111'), PlayerInterfaceSimple('222'), PlayerInterfaceSimple('333')]
-GameLoop(the_players).start()
