@@ -93,6 +93,9 @@ class GameLoop:
         else:
             action = player.interface.do_action(self.get_game_state(), player.current_coins())
 
+        if action == PlayerAction.FAIL:
+            action = player.interface.do_action(self.get_game_state(), player.current_coins())
+
         self.broadcast_last_action(action)
 
         if action == PlayerAction.KEEP:

@@ -17,7 +17,7 @@ class PlayerAction(Enum):
 
 
 class PlayerInterface:
-    def name(self):
+    def name(self) -> str:
         return 'UNKNOWN'
 
     def receive_player_number(self, number: int):

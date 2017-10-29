@@ -4,10 +4,12 @@ import threading
 import logging
 
 
+frame_splitter = b'\x7D\x7D\x7D\x7D'
+
+
 class Server:
-    def __init__(self, port: int, response_timeout: int, max_connections: int=7):
+    def __init__(self, port: int, max_connections: int=7):
         self._port = port
-        self._response_timeout = response_timeout  # seconds
         self._max_connections = max_connections
         self._clients = []
         self._client_buffers = []
@@ -63,6 +65,7 @@ class Server:
                 logging.error('Failed broadcast to: %s', client.getsockname())
 
     def send_to_client(self, data: bytes, client_id: int):
+        data = data + frame_splitter
         if len(self._clients) > client_id:
             client = self._clients[client_id]
             try:
@@ -76,7 +79,7 @@ class Server:
         data = bytearray()
         if len(self._clients) > client_id:
             with self._lock:
-                data = self._client_buffers[client_id]
+                data = self._client_buffers[client_id].split(frame_splitter)[0]
                 self._client_buffers[client_id] = bytearray()
         else:
             logging.error('Client does not exist: %d', client_id)
@@ -90,15 +93,15 @@ class Server:
 
 ####################################################################################################
 
-server = Server(4000, 2)
-server.start()
-while True:
-    import time
-    time.sleep(2)
-    server.send_to_client('kaj ima\n'.encode(), 0)
-    server.broadcast_data('lima\n'.encode())
-    response = server.read_client_data(0)
-    if response:
-        print(response)
-    else:
-        print('jbg')
+# server = Server(4000, 2)
+# server.start()
+# while True:
+#     import time
+#     time.sleep(2)
+#     server.send_to_client('kaj ima\n'.encode(), 0)
+#     server.broadcast_data('lima\n'.encode())
+#     response = server.read_client_data(0)
+#     if response:
+#         print(response)
+#     else:
+#         print('jbg')

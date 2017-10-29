@@ -1,6 +1,11 @@
 from avoiding_cards.player import GameState, PlayerAction
 
 
+class PlayerNameMessage:
+    def __init__(self, name: str):
+        self.name = name
+
+
 class PlayerNumberMessage:
     def __init__(self, number: int):
         self.number = number
