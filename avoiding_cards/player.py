@@ -29,5 +29,8 @@ class PlayerInterface:
     def receive_last_action(self, action: PlayerAction):
         pass
 
+    def receive_points(self, points: List[int]):
+        pass
+
     def do_action(self, game_state: GameState, your_coins: int) -> PlayerAction:
         return PlayerAction.FAIL

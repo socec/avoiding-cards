@@ -1,4 +1,5 @@
 from avoiding_cards.player import GameState, PlayerAction
+from typing import List
 
 
 class PlayerNameMessage:
@@ -30,3 +31,8 @@ class DoActionMessage:
 class ActionResponseMessage:
     def __init__(self, action: PlayerAction):
         self.action = action
+
+
+class PointsMessage:
+    def __init__(self, points: List[int]):
+        self.points = points

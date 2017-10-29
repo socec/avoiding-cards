@@ -26,6 +26,9 @@ class DefaultHandler(ClientMessageHandler):
         if type(msg) == messages.LastActionMessage:
             action = msg.action
             self.player.receive_last_action(action)
+        if type(msg) == messages.PointsMessage:
+            points = msg.points
+            self.player.receive_points(points)
         if type(msg) == messages.DoActionMessage:
             game_state = msg.game_state
             your_coins = msg.your_coins

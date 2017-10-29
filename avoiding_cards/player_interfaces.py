@@ -1,6 +1,7 @@
 import pickle
 import random
 import time
+from typing import List
 
 from avoiding_cards import messages
 from avoiding_cards.player import GameState, PlayerAction, PlayerInterface
@@ -32,6 +33,10 @@ class ServerPlayerInterface(PlayerInterface):
         msg = pickle.dumps(messages.LastActionMessage(action))
         self.server.send_to_client(msg, self.player_number)
 
+    def receive_points(self, points: List[int]):
+        msg = pickle.dumps(messages.PointsMessage(points))
+        self.server.send_to_client(msg, self.player_number)
+
     def do_action(self, game_state: GameState, your_coins: int) -> PlayerAction:
         msg = pickle.dumps(messages.DoActionMessage(game_state, your_coins))
         self.server.send_to_client(msg, self.player_number)
@@ -60,6 +65,9 @@ class SimplePlayerInterface(PlayerInterface):
 
     def receive_last_action(self, action: PlayerAction):
         print('{} - thanks for action: {}'.format(self.name, action))
+
+    def receive_points(self, points: List[int]):
+        print('{} - thanks for points: {}'.format(self.name, points))
 
     def do_action(self, state: GameState, coins_owned: int) -> PlayerAction:
         print('{} - my turn: with {}'.format(self.name, state.card))

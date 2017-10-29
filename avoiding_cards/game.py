@@ -10,7 +10,7 @@ class CardDeck:
         deck = list(range(3, 36))
         for i in range(random.randint(3, 9)):
             random.shuffle(deck)
-        self._deck = deck[9:21]
+        self._deck = deck[9:]
 
     def draw(self) -> int:
         if self.size() > 0:
@@ -65,11 +65,11 @@ class GameLoop:
         self._active_player = 0
         self._player_cards = []
 
-    def get_game_state(self):
+    def get_game_state(self) -> GameState:
         self._player_cards = [player.current_cards() for player in self._players]
         return GameState(self._card, self._coins, self._active_player, self._player_cards)
 
-    def get_player_points(self):
+    def get_player_points(self) -> List[int]:
         return [player.current_points() for player in self._players]
 
     def broadcast_player_number(self):
@@ -83,6 +83,10 @@ class GameLoop:
     def broadcast_last_action(self, action: PlayerAction):
         for player in self._players:
             player.interface.receive_last_action(action)
+
+    def broadcast_points(self):
+        for player in self._players:
+            player.interface.receive_points(self.get_player_points())
 
     def play_turn(self):
         player = self._players[self._active_player]
@@ -125,5 +129,6 @@ class GameLoop:
         # broadcast final game state
         self.broadcast_game_state()
 
-        # show points
+        # broadcast and show points
+        self.broadcast_points()
         print(self.get_player_points())
