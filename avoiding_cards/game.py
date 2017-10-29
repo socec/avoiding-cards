@@ -90,12 +90,11 @@ class GameLoop:
         # players must take the card if they don't have any more coins
         if player.current_coins() == 0:
             action = PlayerAction.KEEP
+        # otherwise they choose an action
         else:
             action = player.interface.do_action(self.get_game_state(), player.current_coins())
 
-        if action == PlayerAction.FAIL:
-            action = player.interface.do_action(self.get_game_state(), player.current_coins())
-
+        # broadcast player action and make adjustments to the game
         self.broadcast_last_action(action)
 
         if action == PlayerAction.KEEP:
@@ -110,7 +109,7 @@ class GameLoop:
             # player gives a coin
             player.remove_coin()
             self._coins += 1
-            # avoiding_cards moves to the next player
+            # game moves to the next player
             self._active_player = (self._active_player + 1) % len(self._players)
 
     def start(self):
@@ -119,11 +118,11 @@ class GameLoop:
 
         # play while there are cards in the deck
         while self._card:
-            # broadcast avoiding_cards state before each turn
+            # broadcast game state before each turn
             self.broadcast_game_state()
             self.play_turn()
 
-        # broadcast final avoiding_cards state
+        # broadcast final game state
         self.broadcast_game_state()
 
         # show points
