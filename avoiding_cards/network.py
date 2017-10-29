@@ -57,13 +57,6 @@ class Server:
                             self._clients.remove(incoming)
                             logging.warning('Client disconnected: %s', incoming.getsockname())
 
-    def broadcast_data(self, data: bytes):
-        for client in self._clients:
-            try:
-                client.sendall(data)
-            except:
-                logging.error('Failed broadcast to: %s', client.getsockname())
-
     def send_to_client(self, data: bytes, client_id: int):
         data = data + frame_splitter
         if len(self._clients) > client_id:
@@ -79,6 +72,7 @@ class Server:
         data = bytearray()
         if len(self._clients) > client_id:
             with self._lock:
+                # write to buffer directly, expecting low traffic towards server
                 data = self._client_buffers[client_id].split(frame_splitter)[0]
                 self._client_buffers[client_id] = bytearray()
         else:
