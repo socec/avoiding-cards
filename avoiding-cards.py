@@ -2,7 +2,7 @@ import time
 
 from avoiding_cards.game import GameLoop
 from avoiding_cards.player_interfaces import ServerPlayerInterface
-from avoiding_cards.server import Server
+from avoiding_cards.network import Server
 
 server = Server(4000)
 server.start()

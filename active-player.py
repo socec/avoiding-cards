@@ -2,7 +2,7 @@ import pickle
 import time
 
 from avoiding_cards import messages
-from avoiding_cards.client import Client, ClientMessageHandler
+from avoiding_cards.network import Client, ClientMessageHandler
 from avoiding_cards.player import PlayerInterface
 from avoiding_cards.player_interfaces import SimplePlayerInterface
 

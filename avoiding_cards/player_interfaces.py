@@ -4,7 +4,7 @@ import time
 
 from avoiding_cards import messages
 from avoiding_cards.player import GameState, PlayerAction, PlayerInterface
-from avoiding_cards.server import Server
+from avoiding_cards.network import Server
 
 
 class ServerPlayerInterface(PlayerInterface):
