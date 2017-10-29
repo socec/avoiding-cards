@@ -1,6 +1,7 @@
 import socket
 import select
 import threading
+import logging
 
 
 class Server:
@@ -14,6 +15,7 @@ class Server:
         self._thread = threading.Thread(target=self._connection_handler)
         self._lock = threading.Lock()
         self._running = False
+        logging.basicConfig(format='%(levelname)s: %(message)s')
 
     def start(self):
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -51,14 +53,14 @@ class Server:
                         else:
                             del self._client_buffers[self._clients.index(incoming)]
                             self._clients.remove(incoming)
-                            print('Client disconnected: {}'.format(incoming.getsockname()))
+                            logging.warning('Client disconnected: %s', incoming.getsockname())
 
     def broadcast_data(self, data: bytes):
         for client in self._clients:
             try:
                 client.sendall(data)
             except:
-                print('Failed broadcast to: {}'.format(client.getsockname()))
+                logging.error('Failed broadcast to: %s', client.getsockname())
 
     def send_to_client(self, data: bytes, client_id: int):
         if len(self._clients) > client_id:
@@ -66,9 +68,9 @@ class Server:
             try:
                 client.sendall(data)
             except:
-                print('Failed sending to client: {} @ {}'.format(client_id, client.getsockname()))
+                logging.error('Failed sending to client: %d @ %s', client_id, client.getsockname())
         else:
-            print('Client does not exist: {}'.format(client_id))
+            logging.error('Client does not exist: %d', client_id)
 
     def read_client_data(self, client_id: int) -> bytes:
         data = bytearray()
@@ -77,7 +79,7 @@ class Server:
                 data = self._client_buffers[client_id]
                 self._client_buffers[client_id] = bytearray()
         else:
-            print('Client does not exist: {}'.format(client_id))
+            logging.error('Client does not exist: %d', client_id)
         return data
 
     def get_connected_clients(self):

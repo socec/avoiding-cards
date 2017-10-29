@@ -1,5 +1,6 @@
 import socket
 import threading
+import logging
 
 
 class MessageHandler:
@@ -15,6 +16,7 @@ class Client:
         self._handler = message_handler
         self._thread = threading.Thread(target=self._receive_messages)
         self._running = False
+        logging.basicConfig(format='%(levelname)s: %(message)s')
 
     def start(self):
         self._socket.connect((self._server_address, self._server_port))
@@ -30,7 +32,7 @@ class Client:
         try:
             self._socket.sendall(data)
         except:
-            print('Failed sending data to server')
+            logging.error('Failed sending data to server')
 
     def _receive_messages(self):
         while self._running:
@@ -40,7 +42,7 @@ class Client:
             else:
                 self._running = False
                 self._socket.close()
-                print('Server closed connection')
+                logging.error('Server closed the connection, client stopped')
 
     def is_running(self):
         return self._running
